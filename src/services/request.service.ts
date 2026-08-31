@@ -46,7 +46,7 @@ export class RequestService {
           throw new ApiError("Insufficient inventory", 400);
         }
 
-        await inventoryRepository.decrease(inventory, data.quantity);
+        await inventoryRepository.decrease(inventory, data.quantity, transaction);
       }
 
       return requestRepository.create(data, transaction);
@@ -90,7 +90,7 @@ export class RequestService {
         );
 
         if (inventory) {
-          await inventoryRepository.increase(inventory, request.quantity);
+          await inventoryRepository.increase(inventory, request.quantity, transaction);
         }
       }
 
@@ -109,7 +109,7 @@ export class RequestService {
           throw new ApiError("Insufficient inventory", 400);
         }
 
-        await inventoryRepository.decrease(inventory, request.quantity);
+        await inventoryRepository.decrease(inventory, request.quantity, transaction);
       }
 
       return requestRepository.updateStatus(request, status, transaction);
@@ -153,7 +153,7 @@ export class RequestService {
         );
 
         if (oldInventory) {
-          await inventoryRepository.increase(oldInventory, request.quantity);
+          await inventoryRepository.increase(oldInventory, request.quantity, transaction);
         }
       }
 
@@ -172,7 +172,7 @@ export class RequestService {
           throw new ApiError("Insufficient inventory", 400);
         }
 
-        await inventoryRepository.decrease(newInventory, quantity);
+        await inventoryRepository.decrease(newInventory, quantity, transaction);
       }
 
       return requestRepository.update(request, {
@@ -201,7 +201,7 @@ export class RequestService {
         );
 
         if (inventory) {
-          await inventoryRepository.increase(inventory, request.quantity);
+          await inventoryRepository.increase(inventory, request.quantity, transaction);
         }
       }
 

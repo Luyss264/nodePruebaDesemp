@@ -44,16 +44,16 @@ export class InventoryRepository {
     return inventory.update({ isActive: false });
   }
 
-  public async increase(inventory: Inventory, quantity: number): Promise<Inventory> {
-    return inventory.update({ quantity: inventory.quantity + quantity });
+  public async increase(inventory: Inventory, quantity: number, transaction?: Transaction): Promise<Inventory> {
+    return inventory.update({ quantity: inventory.quantity + quantity }, { transaction });
   }
 
-  public async decrease(inventory: Inventory, quantity: number): Promise<Inventory> {
+  public async decrease(inventory: Inventory, quantity: number, transaction?: Transaction): Promise<Inventory> {
     if (inventory.quantity < quantity) {
       throw new Error("INVENTORY_INSUFFICIENT");
     }
 
-    return inventory.update({ quantity: inventory.quantity - quantity });
+    return inventory.update({ quantity: inventory.quantity - quantity }, { transaction });
   }
 }
 
