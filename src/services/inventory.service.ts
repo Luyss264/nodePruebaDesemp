@@ -1,6 +1,7 @@
 import type { CreateInventoryDto, UpdateInventoryDto } from "../types/inventory.types.js";
 import { inventoryRepository } from "../repositories/inventory.repository.js";
 import { medicineRepository } from "../repositories/medicine.repository.js";
+import { requestRepository } from "../repositories/request.repository.js";
 import { warehouseRepository } from "../repositories/warehouse.repository.js";
 import { ApiError } from "../utils/ApiErrors.js";
 
@@ -54,6 +55,10 @@ export class InventoryService {
 
     if (!inventory) {
       throw new ApiError("Inventory record not found", 404);
+    }
+
+    if (await requestRepository.hasActiveForInventory(inventory.warehouseId, inventory.medicineId)) {
+      throw new ApiError("Cannot deactivate inventory with active supply requests", 409);
     }
 
     return inventoryRepository.softDelete(inventory);

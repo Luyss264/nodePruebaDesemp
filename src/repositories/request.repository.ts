@@ -20,8 +20,26 @@ export class RequestRepository {
       where: { id, isActive: true },
       include: [Clinic, Medicine, Warehouse],
       transaction,
-      lock: transaction ? transaction.LOCK.UPDATE : undefined
+      lock: transaction
+        ? { level: transaction.LOCK.UPDATE, of: SupplyRequest }
+        : undefined
     });
+  }
+
+  public async hasActiveForClinic(clinicId: number): Promise<boolean> {
+    return (await SupplyRequest.count({ where: { clinicId, isActive: true } })) > 0;
+  }
+
+  public async hasActiveForMedicine(medicineId: number): Promise<boolean> {
+    return (await SupplyRequest.count({ where: { medicineId, isActive: true } })) > 0;
+  }
+
+  public async hasActiveForWarehouse(warehouseId: number): Promise<boolean> {
+    return (await SupplyRequest.count({ where: { warehouseId, isActive: true } })) > 0;
+  }
+
+  public async hasActiveForInventory(warehouseId: number, medicineId: number): Promise<boolean> {
+    return (await SupplyRequest.count({ where: { warehouseId, medicineId, isActive: true } })) > 0;
   }
 
   public async update(

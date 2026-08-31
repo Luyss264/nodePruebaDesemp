@@ -1,8 +1,12 @@
+import fs from "fs";
 import multer from "multer";
 import { ApiError } from "../utils/ApiErrors.js";
 
+const uploadDirectory = "uploads";
+fs.mkdirSync(uploadDirectory, { recursive: true });
+
 const storage = multer.diskStorage({
-  destination: "uploads/",
+  destination: uploadDirectory,
   filename: (_request, file, callback) => {
     callback(null, `${Date.now()}-${file.originalname}`);
   }

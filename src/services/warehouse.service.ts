@@ -1,5 +1,6 @@
 import type { CreateWarehouseDto, UpdateWarehouseDto } from "../types/warehouse.types.js";
 import { warehouseRepository } from "../repositories/warehouse.repository.js";
+import { requestRepository } from "../repositories/request.repository.js";
 import { ApiError } from "../utils/ApiErrors.js";
 
 export class WarehouseService {
@@ -29,6 +30,10 @@ export class WarehouseService {
 
     if (!warehouse) {
       throw new ApiError("Warehouse not found", 404);
+    }
+
+    if (await requestRepository.hasActiveForWarehouse(id)) {
+      throw new ApiError("Cannot deactivate a warehouse with active supply requests", 409);
     }
 
     return warehouseRepository.softDelete(warehouse);

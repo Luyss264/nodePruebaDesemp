@@ -58,7 +58,7 @@ router.get("/", warehouseController.findAll);
  * /warehouses/{id}:
  *   put:
  *     summary: Actualizar una bodega
- *     description: Actualmente esta operación requiere name y location.
+ *     description: Envía uno o ambos campos que quieras actualizar.
  *     tags: [Warehouses]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
@@ -67,7 +67,7 @@ router.get("/", warehouseController.findAll);
  *       required: true
  *       content:
  *         application/json:
- *           schema: { $ref: '#/components/schemas/WarehouseInput' }
+ *           schema: { $ref: '#/components/schemas/WarehouseUpdate' }
  *           example:
  *             name: Bodega Norte Principal
  *             location: Medellín, Antioquia
@@ -80,7 +80,7 @@ router.get("/", warehouseController.findAll);
  *       '404':
  *         description: Bodega no encontrada.
  */
-router.put("/:id", validateNumericId, validateWarehouse, validateWarehouseUpdate, warehouseController.update);
+router.put("/:id", validateNumericId, validateWarehouseUpdate, warehouseController.update);
 
 /**
  * @swagger
