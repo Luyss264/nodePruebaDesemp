@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { UniqueConstraintError } from "sequelize";
-import type { LoginUserDto, RefreshTokenDto, RegisterUserDto } from "../types/auth.types.js";
+import type { JwtPayload, LoginUserDto, RefreshTokenDto, RegisterUserDto } from "../types/auth.types.js";
 import { userRepository } from "../repositories/user.repository.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt.js";
@@ -55,7 +55,14 @@ export class AuthService {
   }
 
   public async refresh(data: RefreshTokenDto): Promise<{ accessToken: string; refreshToken: string }> {
-    const payload = verifyRefreshToken(data.refreshToken);
+    let payload: JwtPayload;
+
+    try {
+      payload = verifyRefreshToken(data.refreshToken);
+    } catch {
+      throw new ApiError("Invalid refresh token", 401);
+    }
+
     const user = await userRepository.findById(payload.id);
 
     if (!user || user.refreshToken !== data.refreshToken) {

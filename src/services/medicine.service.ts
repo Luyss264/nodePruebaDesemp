@@ -1,5 +1,6 @@
 import type { CreateMedicineDto, UpdateMedicineDto } from "../types/medicine.types.js";
 import { medicineRepository } from "../repositories/medicine.repository.js";
+import { requestRepository } from "../repositories/request.repository.js";
 import { ApiError } from "../utils/ApiErrors.js";
 
 export class MedicineService {
@@ -32,6 +33,10 @@ export class MedicineService {
 
     if (!medicine) {
       throw new ApiError("Medicine not found", 404);
+    }
+
+    if (await requestRepository.hasActiveForMedicine(id)) {
+      throw new ApiError("Cannot deactivate a medicine with active supply requests", 409);
     }
 
     return medicineRepository.softDelete(medicine);

@@ -43,10 +43,65 @@ interface SeedData {
   inventories?: SeedInventory[];
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isValidEmail(value: unknown): boolean {
+  return typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function validateArray(
+  data: Record<string, unknown>,
+  key: keyof SeedData,
+  validateItem: (item: Record<string, unknown>) => boolean
+): void {
+  const value = data[key];
+
+  if (value === undefined) {
+    return;
+  }
+
+  if (!Array.isArray(value) || !value.every((item) => isRecord(item) && validateItem(item))) {
+    throw new ApiError(`Invalid seed data for ${key}`, 400);
+  }
+}
+
 function validateSeedData(data: unknown): SeedData {
-  if (!data || typeof data !== "object" || Array.isArray(data)) {
+  if (!isRecord(data)) {
     throw new ApiError("Seed JSON must be an object", 400);
   }
+
+  validateArray(data, "users", (user) =>
+    isNonEmptyString(user.name) &&
+    isValidEmail(user.email) &&
+    isNonEmptyString(user.password) &&
+    user.password.length >= 6 &&
+    (user.role === "ADMIN" || user.role === "REQUEST_MANAGER")
+  );
+  validateArray(data, "clinics", (clinic) =>
+    isNonEmptyString(clinic.name) &&
+    isNonEmptyString(clinic.nit) &&
+    isNonEmptyString(clinic.responsibleName) &&
+    isValidEmail(clinic.responsibleEmail)
+  );
+  validateArray(data, "warehouses", (warehouse) =>
+    isNonEmptyString(warehouse.name) && isNonEmptyString(warehouse.location)
+  );
+  validateArray(data, "medicines", (medicine) =>
+    isNonEmptyString(medicine.name) &&
+    (medicine.description === undefined || typeof medicine.description === "string")
+  );
+  validateArray(data, "inventories", (inventory) =>
+    isNonEmptyString(inventory.warehouseName) &&
+    isNonEmptyString(inventory.medicineName) &&
+    Number.isInteger(inventory.quantity) &&
+    (inventory.quantity as number) >= 0
+  );
 
   return data as SeedData;
 }

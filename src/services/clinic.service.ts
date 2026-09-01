@@ -1,5 +1,6 @@
 import type { CreateClinicDto, UpdateClinicDto } from "../types/clinic.types.js";
 import { clinicRepository } from "../repositories/clinic.repository.js";
+import { requestRepository } from "../repositories/request.repository.js";
 import { ApiError } from "../utils/ApiErrors.js";
 
 export class ClinicService {
@@ -52,6 +53,10 @@ export class ClinicService {
 
     if (!clinic) {
       throw new ApiError("Clinic not found", 404);
+    }
+
+    if (await requestRepository.hasActiveForClinic(id)) {
+      throw new ApiError("Cannot deactivate a clinic with active supply requests", 409);
     }
 
     return clinicRepository.softDelete(clinic);
