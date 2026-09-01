@@ -203,6 +203,12 @@ export function validateCreateRequest(request: Request, response: Response, next
 export function validateUpdateRequest(request: Request, response: Response, next: NextFunction): void {
   try {
     const body = request.body as Record<string, unknown>;
+    const hasAnyUpdatableField = ["clinicId", "medicineId", "quantity", "warehouseId", "status"]
+      .some((field) => body[field] !== undefined);
+
+    if (!hasAnyUpdatableField) {
+      throw new ApiError("At least one field must be provided for update", 400);
+    }
 
     if (body.clinicId !== undefined && !isPositiveInteger(body.clinicId)) {
       throw new ApiError("clinicId is invalid", 400);

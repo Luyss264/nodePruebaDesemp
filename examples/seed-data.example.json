@@ -1,0 +1,43 @@
+{
+  "users": [
+    {
+      "name": "Ana Pérez",
+      "email": "ana.perez@example.com",
+      "password": "ClaveSegura123",
+      "role": "ADMIN"
+    },
+    {
+      "name": "Carlos Ruiz",
+      "email": "carlos.ruiz@example.com",
+      "password": "ClaveSegura123",
+      "role": "REQUEST_MANAGER"
+    }
+  ],
+  "clinics": [
+    {
+      "name": "Clínica Central",
+      "nit": "900123456-7",
+      "responsibleName": "Laura Gómez",
+      "responsibleEmail": "laura@clinicacentral.com"
+    }
+  ],
+  "warehouses": [
+    {
+      "name": "Bodega Norte",
+      "location": "Medellín, Antioquia"
+    }
+  ],
+  "medicines": [
+    {
+      "name": "Acetaminofén 500 mg",
+      "description": "Analgésico y antipirético en tabletas."
+    }
+  ],
+  "inventories": [
+    {
+      "warehouseName": "Bodega Norte",
+      "medicineName": "Acetaminofén 500 mg",
+      "quantity": 100
+    }
+  ]
+}
